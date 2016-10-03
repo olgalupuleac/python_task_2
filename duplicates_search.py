@@ -16,13 +16,13 @@ hash_to_files = collections.defaultdict(list)
 
 
 top_dir = sys.argv[1]
-for root, _, files in os.walk(top_dir):
+for cur_dir, _, files in os.walk(top_dir):
     for filename in files:
-        if not filename.startswith('.') and not filename.startswith('~'):
-            file_path = os.path.join(root, filename)
-            if not (os.path.islink(file_path)):
-                hsh = md5sum(file_path)
-                hash_to_files[hsh].append(os.path.relpath(file_path, top_dir))
+        if not filename.startswith(('.', '~')):
+            file_path = os.path.join(cur_dir, filename)
+            if not os.path.islink(file_path):
+                hash = md5sum(file_path)
+                hash_to_files[hash].append(os.path.relpath(file_path, top_dir))
 
 for duplicates in hash_to_files.values():
     if len(duplicates) > 1:
